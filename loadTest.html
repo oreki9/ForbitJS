@@ -1,15 +1,4 @@
 <script src="forbit.js"></script>
 <script>
-loadFile("GET","forbitbyte.4js",
-	(text)=>{
-		console.log(get4bitfromUTF16(text));
-		console.log(text);
-		let textbody = get4bitfromUTF16(text);
-		if(textbody[textbody.length-1]=="\n"){
-			textbody=textbody.slice(0,textbody.length-1);
-		}
-		console.log(textbody);
-		//eval(textbody);
-	}
-);//load text then if last byte is string then read byte before it
+forbit("forbitbyte.4js",(text)=>{console.log(text)})
 </script>

@@ -1,8 +1,7 @@
-var commandbit4 = '[](){}+b=01";,>!';
+var commandbit4 = '[](){}+b=01";,>&';
 var indexCommand = [];
 commandbit4.split("").forEach((x,i)=>{indexCommand[x] = i});
-var b = [(bit8)=>{return parseInt(bit8.toString(8),2)},
-        (arr)=>{str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";res="";arr.forEach((x)=>{res+=str[x]});return res;},
+var b = [(arr)=>{str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";res="";arr.forEach((x)=>{res+=str[x]});return res;},
         loadFile,
         (start,end,oper,func)=>{for(let i=start;i<end;i+=oper){func()}},
         (code)=>{return eval(code)},
@@ -21,7 +20,18 @@ function loadFile(method,file,funcThen){
     }
     rawFile.send(null);
 }
-
+function forbit(name,funct){
+	loadFile("GET",name,
+		(text)=>{
+			let textbody = get4bitfromUTF16(text);
+			if(textbody[textbody.length-1]=="\n"){
+				textbody=textbody.slice(0,textbody.length-1);
+			}
+			funct(textbody);
+			//eval(textbody);
+		}
+	);
+}
 function strEncodeUTF16(str) {
   var buf = new ArrayBuffer(str.length*2);
   var bufView = new Uint16Array(buf);
