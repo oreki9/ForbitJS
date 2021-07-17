@@ -1,0 +1,159 @@
+<head>
+<style>
+.editor {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  overflow-y: auto;
+  padding-left: 48px;
+  counter-reset: line;
+}
+
+.editor div {
+  display: block;
+  position: relative;
+  white-space: pre-wrap;
+}
+
+.editor div::before {
+  content: counter(line);
+  counter-increment: line;
+  position: absolute;
+  right: calc(100% + 16px);
+  opacity: 0.5;
+}
+
+</style>
+<script src="forbit.js"></script>
+</head>
+<div style="border:1px;border-bottom-style:bold;padding-top: 150px;margin: auto;height:300;width:400">
+<div class="editor" contenteditable="true" spellcheck="false">
+  <div>function example() <red>{</red></div>
+  <div> return 42;</div>
+  <div>}</div>
+</div>
+<div style="width:400px;padding-top: 30px;">
+<input id="nametext" style="width:200px"></input>
+<button onclick="saveText()">Save</button>
+<button onclick="loadText()">Load</button>
+</div>
+</div>
+<script>
+const js = el => {
+  for (const node of el.children) {
+    const s = node.innerText
+      .replace(/\b(\d+)/g, '<em><strong>$1</strong></em>');
+    node.innerHTML = s.split('\n').join('<br/>');
+  }
+};
+function saveText(){
+	//"(b)=>{b}";
+	var text4bitjs = document.getElementsByClassName("editor")[0].innerText
+	text4bitjs = text4bitjs.replace(/(\r\n|\n|\r)/gm, "");
+	var codebit = text4bitjs.match(/.{1,4}/g).map((x)=>{
+        let a = "";
+        x.split("").forEach((s)=>{
+            a+=getBitPad(indexCommand[s]);
+        });
+        return String.fromCharCode(parseInt(a,2));
+    });
+	var resultbit = "";
+	codebit.forEach((x)=>{resultbit+=x});
+	console.log(resultbit);
+	downloadToFile(resultbit, document.getElementById("nametext").value, 'text/plain');
+}
+function loadText(){
+	loadFile("GET",document.getElementById("nametext").value,
+		(text)=>{
+			console.log(get4bitfromUTF16(text));
+			let textbody = get4bitfromUTF16(text);
+			if(textbody[textbody.length-1]=="\n"){
+				textbody=textbody.slice(0,textbody.length-1);
+			}
+			document.getElementsByClassName("editor")[0].innerHTML = "<div>"+textbody+"</div>";
+		}
+	);
+}
+const downloadToFile = (content, filename, contentType) => {
+	const a = document.createElement('a');
+	const file = new Blob([content], {type: contentType});
+	a.href= URL.createObjectURL(file);
+	a.download = filename;
+	a.click();
+	URL.revokeObjectURL(a.href);
+};
+function highlightCode(){
+	let domcolor = ["red","green","blue","magenta"];
+	var itemcolor = [];
+	domcolor.forEach((x)=>{
+		let domsize = document.getElementsByTagName(x);
+		for(let i=0;i<domsize.length;i++){
+			itemcolor.push(domsize[i]);
+		}
+	});
+	for(let i=0;i<itemcolor.length;i++){
+		itemcolor[i].style.color=itemcolor[i].nodeName;
+	}
+}
+const editor = (el, highlight = js, tab = '    ') => {
+  const caret = () => {
+    const range = window.getSelection().getRangeAt(0);
+    const prefix = range.cloneRange();
+    prefix.selectNodeContents(el);
+    prefix.setEnd(range.endContainer, range.endOffset);
+    return prefix.toString().length;
+  };
+
+  const setCaret = (pos, parent = el) => {
+    for (const node of parent.childNodes) {
+      if (node.nodeType == Node.TEXT_NODE) {
+        if (node.length >= pos) {
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.setStart(node, pos);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return -1;
+        } else {
+          pos = pos - node.length;
+        }
+      } else {
+        pos = setCaret(pos, node);
+        if (pos < 0) {
+          return pos;
+        }
+      }
+    }
+    return pos;
+  };
+
+  highlight(el);
+
+  el.addEventListener('keydown', e => {
+    if (e.which === 9) {
+      const pos = caret() + tab.length;
+      const range = window.getSelection().getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(document.createTextNode(tab));
+      highlight(el);
+      setCaret(pos);
+      e.preventDefault();
+    }
+  });
+
+  el.addEventListener('keyup', e => {
+    if (e.keyCode >= 0x30 || e.keyCode == 0x20) {
+      const pos = caret();
+      highlight(el);
+      setCaret(pos);
+	  highlightCode()
+    }
+  });
+};
+
+// Turn div into an editor
+const el = document.querySelector('.editor');
+el.focus();
+editor(el);
+</script>
