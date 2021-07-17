@@ -48,7 +48,7 @@ b[111]=[];
 ```
 function
 ```javascript
-b[101]=(b1)=>{//command}
+b[101]=(b1)=>{/*command*/}
 ```
 function in forbit cant return value so you must use bank(b) to strore value
 forbit have bank function that make your code shorter, bank index 0 to 5 is bank function that you must not rewrite it,you can use index 6 and more to save data as variable
@@ -81,7 +81,7 @@ b[0b100]()//eval(string)
 recursion
 ```javascript
 b[100]=(b1)=>{
-	b[0b11](1);//console.log(
+	b[0b11](1);//console.log(1)
 	[b[100],(b01)=>{b01}][(0b0101<b1)+0](b1+=1)//if else
 }
 ```
@@ -108,7 +108,7 @@ b[100]["00"]=1;//attribute
 b[100]["01"]=(b01,b11)=>{//command}
 ```
 object can use for class and dict
-###compiling and running
+### compiling and running
 you can use normal javascript and store it in bank(b) but dont compile to forbit file and add in another javascript source and add to bank before forbit using it
 ```javascript
 forbit("forbitbyte.4js",(text)=>{
