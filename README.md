@@ -5,7 +5,7 @@ the character that you can use is [](){}+b=01";,>& and with just that char you c
 b in the char is bank or memory storage and for the first character for variable
 you can read the more minimalist code in [jsf*ck](https://github.com/aemkei/jsfuck)
 ### How Compiler works
-![compiler flow](https://oreki9.github.io/forbit/forbitiflow.png)
+![compiler flow](https://oreki9.github.io/ForbitJS/forbitiflow.png)
 ### Add to browser
 ```html
 <script src='4bitjavascript.js'></script>
