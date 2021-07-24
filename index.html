@@ -38,6 +38,7 @@
 <button onclick="loadText()">Load</button>
 </div>
 </div>
+<script src="../filesaver.js"></script>
 <script>
 const js = el => {
   for (const node of el.children) {
@@ -49,27 +50,29 @@ const js = el => {
 function saveText(){
 	//"(b)=>{b}";
 	var text4bitjs = document.getElementsByClassName("editor")[0].innerText
-	text4bitjs = text4bitjs.replace(/(\r\n|\n|\r)/gm, "");
-	var codebit = text4bitjs.match(/.{1,4}/g).map((x)=>{
+	let rgx = /[\[\]\(\)\{\}+b=01";,>&]+/g;
+	text4bitjs = (text4bitjs.match(rgx) || []).join('')
+	console.log(text4bitjs);
+	var codebit = text4bitjs.match(/.{1,2}/g).map((x)=>{
         let a = "";
         x.split("").forEach((s)=>{
-            a+=getBitPad(indexCommand[s]);
+            a+=dec2Bit(indexCommand[s]).padStart(4, "0");
         });
-        return String.fromCharCode(parseInt(a,2));
+		a = a.padEnd(8, "0");
+        return parseInt(a,2);
     });
-	var resultbit = "";
-	codebit.forEach((x)=>{resultbit+=x});
-	console.log(resultbit);
-	downloadToFile(resultbit, document.getElementById("nametext").value, 'text/plain');
+	console.log(codebit);
+	let buf = new ArrayBuffer(codebit.length);
+	let bufView = new Uint8Array(buf);
+	codebit.forEach((x,i)=>{bufView[i]=x});
+	console.log(bufView);
+	downloadToFile(bufView, document.getElementById("nametext").value, "text/plain");
 }
 function loadText(){
 	loadFile("GET",document.getElementById("nametext").value,
 		(text)=>{
-			console.log(get4bitfromUTF16(text));
 			let textbody = get4bitfromUTF16(text);
-			if(textbody[textbody.length-1]=="\n"){
-				textbody=textbody.slice(0,textbody.length-1);
-			}
+			console.log(textbody);
 			document.getElementsByClassName("editor")[0].innerHTML = "<div>"+textbody+"</div>";
 		}
 	);

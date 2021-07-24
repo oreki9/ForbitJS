@@ -1,7 +1,10 @@
 var commandbit4 = '[](){}+b=01";,>&';
 var indexCommand = [];
+var indexStringData = [];
+let stringData="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890`~!@#$%^&*()-_=+{[}]\|:;'<,>.?/";
 commandbit4.split("").forEach((x,i)=>{indexCommand[x] = i});
-var b = [(arr)=>{str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";res="";arr.forEach((x)=>{res+=str[x]});return res;},
+stringData.split("").forEach((x,i)=>{indexStringData[x] = i});
+var b = [(arr)=>{res="";arr.forEach((x)=>{res+=stringData[x]});return res;},
         loadFile,
         (start,end,oper,func)=>{for(let i=start;i<end;i+=oper){func()}},
         (code)=>{return eval(code)},
@@ -9,32 +12,34 @@ var b = [(arr)=>{str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";res=
         (x)=>{console.log(x)}];
 function loadFile(method,file,funcThen){
     var rawFile = new XMLHttpRequest();
-    rawFile.open(method, file, false);
-    rawFile.onreadystatechange = function (){
+    rawFile.open(method, file, true);
+	rawFile.responseType = 'arraybuffer'
+    rawFile.onload = function (){
         if(rawFile.readyState === 4){
             if(rawFile.status === 200 || rawFile.status == 0){
-                var allText = rawFile.responseText;
-                funcThen(allText)
+                var bytes = new Uint8Array(this.response);
+                funcThen(bytes)
             }
         }
     }
     rawFile.send(null);
+}//b[0b11](b[0]([0, 0b1011, 0b100, 0b10001, 0b10011, 0b1001000, 0b111101, 0b1001001]))
+function getStringtoArrayIndex(str){
+	return str.split("").map((x)=>{return indexStringData[x]})
 }
 function forbit(name,funct){
 	loadFile("GET",name,
 		(text)=>{
 			let textbody = get4bitfromUTF16(text);
-			if(textbody[textbody.length-1]=="\n"){
-				textbody=textbody.slice(0,textbody.length-1);
-			}
 			funct(textbody);
-			//eval(textbody);
+			eval(textbody);
 		}
 	);
 }
-function strEncodeUTF16(str) {
-  var buf = new ArrayBuffer(str.length*2);
-  var bufView = new Uint16Array(buf);
+function strEncodeUTF8(str) {
+  var buf = new ArrayBuffer(str.length);
+  var bufView = new Uint8Array(buf);
+  console.log(str.charCodeAt(0));
   for (var i=0, strLen=str.length; i < strLen; i++) {
     bufView[i] = str.charCodeAt(i);
   }
@@ -47,15 +52,13 @@ function dec2Bit(dec){
 function getBitPad(uint){
 	return dec2Bit(uint).padStart(4, "0")
 }
-function get4bitfromUTF16(utf16){
-    let x = utf16.split("").map((x)=>{return strEncodeUTF16(x)});
-    let length = x.length;
-    let arr = "";
-    for(let i=0;i<length;i++){
-        let a = dec2Bit(x[i][0]).padStart(16,"0").match(/.{1,4}/g).map((s)=>{return parseInt(s,2)});
-        a.forEach((x)=>{arr+=commandbit4[x]})
-    }
-    return arr;
+function get4bitfromUTF16(utf8){
+	let res4bit = "";
+	utf8.forEach((x)=>{
+		let number = dec2Bit(x).padStart(8, "0");
+		number.match(/.{1,4}/g).forEach((x)=>{res4bit+=commandbit4[parseInt(x,2)]})
+	});
+	return res4bit[res4bit.length-1]=='[' ? res4bit.slice(0,-1) : res4bit;
 }
 function SplitUint8bit(bytes){
 	var a = bytes.substr(bytes.length-4,bytes.length);
