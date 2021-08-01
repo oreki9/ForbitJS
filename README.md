@@ -3,8 +3,9 @@ this is framework to running javascript with minimalist sytax (kind of) and this
 Note beforehand : javascript is realy love string and object, and almost everything is string and object, so thats why a lot weird behaviour can explain with that concept(i think, i dont know, im not javascript master), and you can use that concept to clone brainf_ck code. and this implementation is to help programmer to understand js and make minimal character code with readable syntax for human. (you can make production code with forbit js i think, almost all javascript feature possible in forbit)<br/>
 the character that you can use is [](){}+b=01";,>& and with just that char you can make production code<br/>
 b in the char is bank or memory storage and for the first character for variable
-you can read the more minimalist code in [jsf*ck](https://github.com/aemkei/jsfuck)
-### How Compiler works
+you can read the more minimalist code in [jsf*ck](https://github.com/aemkei/jsfuck)<br/>
+you can use forbit transcoder in [link](https://oreki9.github.io/ForbitJS/index.html) and code [example](https://oreki9.github.io/ForbitJS/loadTest.html)
+### How Forbit works
 ![compiler flow](https://oreki9.github.io/ForbitJS/forbitiflow.png)
 ### Add to browser
 ```html
@@ -16,6 +17,7 @@ forbit("namecode.4js",(bit)=>{
 	//you can run the code with b[100]([0b100,0b101);
 	eval(bit)
 });
+</script>
 ```
 ### Code example
 ```javascript
